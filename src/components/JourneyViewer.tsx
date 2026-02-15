@@ -48,7 +48,25 @@ export default function JourneyViewer({ journey, onBack }: JourneyViewerProps) {
     }
   };
 
-  const currentStop = journey.stops[currentStopIndex];
+  const currentStop = journey.stops?.[currentStopIndex];
+
+  // Safety check: if no stops or invalid data, show error
+  if (!journey.stops || journey.stops.length === 0 || !currentStop) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <p className="text-red-400 mb-4 text-lg">Unable to load journey data</p>
+          <p className="text-gray-500 mb-6 text-sm">The AI response may have been malformed. Please try again.</p>
+          <button
+            onClick={onBack}
+            className="px-6 py-3 bg-white text-black rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            ← Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -108,7 +126,7 @@ export default function JourneyViewer({ journey, onBack }: JourneyViewerProps) {
               <img
                 src={journey.imageUrl}
                 alt={journey.product}
-                className="w-full h-96 object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                className="w-full h-96 object-cover"
                 onError={(e) => {
                   // Fallback if image fails to load
                   (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=1200&h=800&fit=crop&q=80';
@@ -139,13 +157,15 @@ export default function JourneyViewer({ journey, onBack }: JourneyViewerProps) {
           </div>
 
           {/* Story panel */}
-          <StoryPanel
-            stop={currentStop}
-            currentIndex={currentStopIndex}
-            totalStops={journey.stops.length}
-            onNext={() => setCurrentStopIndex(Math.min(currentStopIndex + 1, journey.stops.length - 1))}
-            onPrev={() => setCurrentStopIndex(Math.max(currentStopIndex - 1, 0))}
-          />
+          <div className="overflow-y-auto max-h-[600px] pr-4">
+            <StoryPanel
+              stop={currentStop}
+              currentIndex={currentStopIndex}
+              totalStops={journey.stops.length}
+              onNext={() => setCurrentStopIndex(Math.min(currentStopIndex + 1, journey.stops.length - 1))}
+              onPrev={() => setCurrentStopIndex(Math.max(currentStopIndex - 1, 0))}
+            />
+          </div>
         </div>
 
         {/* Timeline - editorial style */}
