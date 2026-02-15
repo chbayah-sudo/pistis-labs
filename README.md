@@ -22,7 +22,7 @@ Pistis Labs is an AI-powered storytelling platform that reveals the hidden histo
 ## How It Works
 
 1. **Upload** - Take or upload a photo of anything: a product label, landmark, species, or moment
-2. **Analyze** - Claude AI identifies the subject and researches its history, origins, and journey
+2. **Analyze** - RunPod Flash workers spin up on-demand to run Claude AI image analysis, generating rich narratives about the subject's history and journey
 3. **Experience** - Navigate through an interactive story with maps, images, and rich narratives
 4. **Discover** - Learn about the people, places, and events that shaped what you see
 
@@ -33,10 +33,11 @@ Pistis Labs is an AI-powered storytelling platform that reveals the hidden histo
 - **Framework**: Next.js 15 (App Router)
 - **Frontend**: React 19 + TypeScript
 - **Styling**: Tailwind CSS 4
+- **AI Infrastructure**: RunPod Flash (serverless distributed computing)
 - **AI Engine**: Anthropic Claude API (Haiku 4.5)
 - **Maps**: Mapbox GL JS
 - **Images**: Pexels API + Unsplash
-- **Deployment**: Vercel
+- **Deployment**: Vercel (frontend) + RunPod Flash (workers)
 
 ---
 
@@ -95,6 +96,14 @@ src/
 │   └── StoryPanel.tsx              # Narrative display panel
 └── types/
     └── index.ts                    # TypeScript type definitions
+
+flash_workers/pistis-workers/
+├── workers/
+│   └── gpu/
+│       └── image_analysis.py       # Claude AI image analysis worker
+├── main.py                         # FastAPI endpoints
+├── mothership.py                   # Load balancer config
+└── requirements.txt                # Python dependencies
 ```
 
 ---
@@ -102,10 +111,12 @@ src/
 ## Features
 
 ### AI-Powered Analysis
+- Runs on RunPod Flash workers for scalable, on-demand compute
 - Uses Claude Haiku 4.5 for fast, detailed image analysis
 - Generates 4-chapter narratives with rich historical context
 - Creates realistic GPS coordinates and location data
 - Includes person stories, quotes, and economic impact
+- Scale-to-zero architecture means zero cost when idle
 
 ### Interactive Maps
 - Mapbox GL JS integration with custom markers
@@ -127,10 +138,37 @@ src/
 
 ---
 
+## RunPod Flash Workers
+
+I used RunPod Flash to handle the AI-powered image analysis because it's perfect for generative workloads like this. Instead of keeping servers running 24/7, Flash workers spin up on-demand when someone uploads an image, process it with Claude, and then scale back to zero.
+
+The image analysis worker:
+- Takes base64-encoded images and sends them to Claude Haiku 4.5
+- Generates rich, cinematic narratives with 4 detailed chapters
+- Returns structured JSON with locations, stories, quotes, and historical context
+- Scales from 0 to 1 worker automatically (no wasted compute)
+- Uses serverless architecture with 5-minute idle timeout
+
+This setup means I only pay for the seconds of compute actually used for image analysis, which is way more cost-effective than running a dedicated server. Plus Flash handles all the infrastructure stuff like load balancing and auto-scaling.
+
+To run the Flash workers locally:
+```bash
+cd flash_workers/pistis-workers
+flash run
+```
+
+To deploy to RunPod:
+```bash
+flash deploy
+```
+
+---
+
 ## Environment Variables
 
 Required:
 - `ANTHROPIC_API_KEY` - Your Anthropic Claude API key
+- `RUNPOD_API_KEY` - RunPod API key for Flash workers
 
 Optional but recommended:
 - `NEXT_PUBLIC_MAPBOX_TOKEN` - Mapbox access token for maps
@@ -187,7 +225,8 @@ MIT License - see LICENSE file for details
 
 ## Acknowledgments
 
-- Built with [Anthropic Claude](https://www.anthropic.com)
+- AI powered by [Anthropic Claude](https://www.anthropic.com)
+- Distributed compute via [RunPod Flash](https://www.runpod.io/flash)
 - Maps powered by [Mapbox](https://www.mapbox.com)
 - Images from [Pexels](https://www.pexels.com) and [Unsplash](https://unsplash.com)
 
