@@ -110,47 +110,37 @@ export default function Home() {
             </div>
           )}
 
-          {/* Features grid - artistic layout */}
-          <div className="grid grid-cols-3 gap-8 mt-20 pt-12 border-t border-gray-900">
-            <div className="space-y-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+          {/* Features - minimalist */}
+          <div className="grid grid-cols-3 gap-6 mt-24 pt-20 relative">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gray-800"></div>
+
+            {/* Upload */}
+            <div className="group relative p-8 border border-gray-800 hover:border-gray-700 transition-colors duration-300">
+              <div className="space-y-3">
+                <h3 className="text-sm tracking-[0.3em] text-gray-400 group-hover:text-white transition-colors">UPLOAD</h3>
+                <p className="text-sm text-gray-500 font-light leading-relaxed">Photo of anything: product, place, creature, moment</p>
               </div>
-              <h3 className="text-sm font-light tracking-wide">UPLOAD</h3>
-              <p className="text-xs text-gray-500 font-light leading-relaxed">Photo of anything: product, place, creature, moment</p>
             </div>
 
-            <div className="space-y-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center">
-                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+            {/* Understand */}
+            <div className="group relative p-8 border border-gray-800 hover:border-gray-700 transition-colors duration-300">
+              <div className="space-y-3">
+                <h3 className="text-sm tracking-[0.3em] text-gray-400 group-hover:text-white transition-colors">UNDERSTAND</h3>
+                <p className="text-sm text-gray-500 font-light leading-relaxed">AI reveals history, origins, context, significance</p>
               </div>
-              <h3 className="text-sm font-light tracking-wide">UNDERSTAND</h3>
-              <p className="text-xs text-gray-500 font-light leading-relaxed">AI reveals history, origins, context, significance</p>
             </div>
 
-            <div className="space-y-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center">
-                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
+            {/* Discover */}
+            <div className="group relative p-8 border border-gray-800 hover:border-gray-700 transition-colors duration-300">
+              <div className="space-y-3">
+                <h3 className="text-sm tracking-[0.3em] text-gray-400 group-hover:text-white transition-colors">DISCOVER</h3>
+                <p className="text-sm text-gray-500 font-light leading-relaxed">Experience cinematic narrative of the untold story</p>
               </div>
-              <h3 className="text-sm font-light tracking-wide">DISCOVER</h3>
-              <p className="text-xs text-gray-500 font-light leading-relaxed">Experience cinematic narrative of the untold story</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Footer - minimal */}
-      <div className="fixed bottom-8 left-0 right-0 flex justify-center z-20">
-        <p className="text-xs text-gray-600 font-light tracking-widest">
-          TREEHACKS 2026 • UNIVERSAL STORY DISCOVERY
-        </p>
-      </div>
     </div>
   );
 }

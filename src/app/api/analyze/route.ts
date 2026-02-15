@@ -205,60 +205,17 @@ CRITICAL REQUIREMENTS:
     console.log('🖼️  Using uploaded image as data URL');
 
     console.log('� Fetching images for each stop...');
-    // Fetch images for each stop with intelligent search queries
+    // Fetch images for each stop using location name for web search results
     const stopsWithImages = await Promise.all(
       responseData.stops.map(async (stop: any, index: number) => {
         try {
-          const subject = responseData.subject.toLowerCase();
-          const title = stop.title?.toLowerCase() || '';
-          
-          // Build highly specific search queries based on stop index
-          let searchQuery = '';
-          
-          if (index === 0) {
-            // First stop - usually origin/farming
-            if (subject.includes('coffee')) {
-              searchQuery = 'coffee plantation harvest picking beans farmers field';
-            } else if (subject.includes('tea')) {
-              searchQuery = 'tea plantation field leaves harvest agricultural';
-            } else if (subject.includes('choco') || subject.includes('cacao')) {
-              searchQuery = 'cacao farm tropical agriculture harvesting';
-            } else {
-              searchQuery = `${subject} origin source farmland agricultural workers`;
-            }
-          } else if (index === 1) {
-            // Second stop - usually processing/manufacturing
-            if (subject.includes('coffee')) {
-              searchQuery = 'coffee roasting processing factory industrial machinery';
-            } else if (subject.includes('tea')) {
-              searchQuery = 'tea factory processing drying machinery production';
-            } else {
-              searchQuery = `${subject} factory manufacturing production workshop`;
-            }
-          } else if (index === 2) {
-            // Third stop - usually trading/packaging
-            if (subject.includes('coffee')) {
-              searchQuery = 'coffee warehouse bags sacks packaging facility storage';
-            } else {
-              searchQuery = `${subject} warehouse packaging supply chain logistics center`;
-            }
-          } else {
-            // Fourth stop - usually serving/retail
-            if (subject.includes('coffee')) {
-              searchQuery = 'coffee cafe shop barista espresso brewing serving customers';
-            } else {
-              searchQuery = `${subject} retail store consumer purchase market`;
-            }
-          }
-          
-          searchQuery = searchQuery.trim();
-          console.log(`   Search (stop ${index + 1}): "${searchQuery}"`);
+          // Search by location name to get real photos of that place
+          const locationName = stop.location?.name || stop.title;
           
           const imageRes = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/image/${encodeURIComponent(searchQuery)}`
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/image/${encodeURIComponent(locationName)}`
           );
           const imageData = await imageRes.json();
-          console.log(`   Image received from ${imageData.source}`);
           return {
             ...stop,
             imageUrl: imageData.url,
