@@ -1,6 +1,7 @@
 'use client';
 
 import { JourneyStop } from '@/types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface StoryPanelProps {
   stop: JourneyStop;
@@ -18,9 +19,22 @@ export default function StoryPanel({
   onPrev,
 }: StoryPanelProps) {
   return (
-    <div className="flex flex-col h-full">
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={stop.id}
+        className="flex flex-col h-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5 }}
+      >
       {/* Stop header */}
-      <div className="mb-8">
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <p className="text-xs text-gray-600 font-light tracking-widest mb-3">
           LOCATION {currentIndex + 1}
         </p>
@@ -28,21 +42,26 @@ export default function StoryPanel({
         {stop.location && (
           <p className="text-sm text-gray-400 font-light">{stop.location.name}</p>
         )}
-      </div>
+      </motion.div>
 
       {/* Stop image */}
       {stop.imageUrl && (
-        <div className="mb-8 -mx-6 px-6 overflow-hidden rounded-lg">
+        <motion.div
+          className="mb-8 -mx-6 px-6 overflow-hidden rounded-lg"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
           <img
             src={stop.imageUrl}
             alt={stop.title}
-            className="w-full h-48 object-cover grayscale opacity-80 hover:opacity-100 transition-opacity duration-300"
+            className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               // Hide image if it fails to load
               (e.target as HTMLImageElement).style.display = 'none';
             }}
           />
-        </div>
+        </motion.div>
       )}
 
       {/* Divider */}
@@ -50,7 +69,12 @@ export default function StoryPanel({
 
       {/* Person storytelling */}
       {stop.personName && (
-        <div className="mb-10">
+        <motion.div
+          className="mb-10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           <p className="text-xs text-gray-600 font-light tracking-widest mb-3">FEATURED</p>
           <h3 className="text-xl font-light mb-3">{stop.personName}</h3>
           {stop.personQuote && (
@@ -58,22 +82,32 @@ export default function StoryPanel({
               "{stop.personQuote}"
             </p>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* Story content */}
-      <div className="flex-1 mb-10">
+      <motion.div
+        className="flex-1 mb-10"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         <p className="text-sm font-light text-gray-400 leading-relaxed">
           {stop.story}
         </p>
-      </div>
+      </motion.div>
 
       {/* Economic impact */}
       {stop.economicImpact && (
-        <div className="mb-10 py-6 border-t border-b border-gray-900">
+        <motion.div
+          className="mb-10 py-6 border-t border-b border-gray-900"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
           <p className="text-xs text-gray-600 font-light tracking-widest mb-3">IMPACT</p>
           <p className="text-sm font-light leading-relaxed">{stop.economicImpact}</p>
-        </div>
+        </motion.div>
       )}
 
       {/* Navigation */}
@@ -96,6 +130,7 @@ export default function StoryPanel({
           NEXT →
         </button>
       </div>
-    </div>
+    </motion.div>
+    </AnimatePresence>
   );
 }

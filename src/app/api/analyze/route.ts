@@ -204,6 +204,72 @@ CRITICAL REQUIREMENTS:
     const imageUrl = `data:${mediaType};base64,${base64}`;
     console.log('🖼️  Using uploaded image as data URL');
 
+    console.log('� Fetching images for each stop...');
+    // Fetch images for each stop with intelligent search queries
+    const stopsWithImages = await Promise.all(
+      responseData.stops.map(async (stop: any, index: number) => {
+        try {
+          const subject = responseData.subject.toLowerCase();
+          const title = stop.title?.toLowerCase() || '';
+          
+          // Build highly specific search queries based on stop index
+          let searchQuery = '';
+          
+          if (index === 0) {
+            // First stop - usually origin/farming
+            if (subject.includes('coffee')) {
+              searchQuery = 'coffee plantation harvest picking beans farmers field';
+            } else if (subject.includes('tea')) {
+              searchQuery = 'tea plantation field leaves harvest agricultural';
+            } else if (subject.includes('choco') || subject.includes('cacao')) {
+              searchQuery = 'cacao farm tropical agriculture harvesting';
+            } else {
+              searchQuery = `${subject} origin source farmland agricultural workers`;
+            }
+          } else if (index === 1) {
+            // Second stop - usually processing/manufacturing
+            if (subject.includes('coffee')) {
+              searchQuery = 'coffee roasting processing factory industrial machinery';
+            } else if (subject.includes('tea')) {
+              searchQuery = 'tea factory processing drying machinery production';
+            } else {
+              searchQuery = `${subject} factory manufacturing production workshop`;
+            }
+          } else if (index === 2) {
+            // Third stop - usually trading/packaging
+            if (subject.includes('coffee')) {
+              searchQuery = 'coffee warehouse bags sacks packaging facility storage';
+            } else {
+              searchQuery = `${subject} warehouse packaging supply chain logistics center`;
+            }
+          } else {
+            // Fourth stop - usually serving/retail
+            if (subject.includes('coffee')) {
+              searchQuery = 'coffee cafe shop barista espresso brewing serving customers';
+            } else {
+              searchQuery = `${subject} retail store consumer purchase market`;
+            }
+          }
+          
+          searchQuery = searchQuery.trim();
+          console.log(`   Search (stop ${index + 1}): "${searchQuery}"`);
+          
+          const imageRes = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/image/${encodeURIComponent(searchQuery)}`
+          );
+          const imageData = await imageRes.json();
+          console.log(`   Image received from ${imageData.source}`);
+          return {
+            ...stop,
+            imageUrl: imageData.url,
+          };
+        } catch (err) {
+          console.warn(`Failed to fetch image for stop: ${stop.title}`);
+          return stop;
+        }
+      })
+    );
+
     console.log('🏗️  Building final journey response...');
     // Build final response
     const journey = {
@@ -212,7 +278,7 @@ CRITICAL REQUIREMENTS:
       description: responseData.description,
       imageUrl: imageUrl,
       narrative: responseData.narrative,
-      stops: responseData.stops.map((stop: any) => ({
+      stops: stopsWithImages.map((stop: any) => ({
         id: stop.id,
         title: stop.title,
         description: stop.description,
@@ -222,7 +288,7 @@ CRITICAL REQUIREMENTS:
         personQuote: stop.personQuote,
         economicImpact: stop.economicImpact,
         duration: stop.duration,
-        imageUrl: undefined,
+        imageUrl: stop.imageUrl,
       })),
       map: {
         startLocation: responseData.startLocation,

@@ -59,9 +59,9 @@ export async function GET(
       });
     }
 
-    // Final fallback
+    // Final fallback - use a relevant generic image
     return NextResponse.json({
-      url: 'https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=1200&h=800&fit=crop&q=80',
+      url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=800&fit=crop&q=80',
       width: 1200,
       height: 800,
       alt: decodedSubject,

@@ -89,7 +89,7 @@ export default function ImageUpload({ onUpload, loading }: ImageUploadProps) {
         <div className="absolute inset-0 border border-black rounded-lg opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
       </button>
 
-      <div className="absolute left-0 right-0 flex flex-col items-center mt-16">
+      <div className="absolute left-0 right-0 flex flex-col items-center mt-24">
         <p className="text-xs text-gray-500 font-light text-center tracking-wide">
           {loading ? 'This may take up to 60 seconds...' : 'JPG, PNG, or WEBP • Up to 10MB'}
         </p>

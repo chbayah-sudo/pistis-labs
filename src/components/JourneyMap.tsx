@@ -16,6 +16,7 @@ export default function JourneyMap({ journey, currentStopIndex }: JourneyMapProp
   const stops = journey.stops;
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [selectedStop, setSelectedStop] = useState<(typeof stops)[0] | null>(null);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -43,7 +44,7 @@ export default function JourneyMap({ journey, currentStopIndex }: JourneyMapProp
       // Initialize map
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/light-v11',
+        style: 'mapbox://styles/mapbox/outdoors-v12',
         center: [validStops[0].location!.lng, validStops[0].location!.lat],
         zoom: 2,
       });
@@ -67,7 +68,13 @@ export default function JourneyMap({ journey, currentStopIndex }: JourneyMapProp
           el.style.fontSize = '12px';
           el.style.fontWeight = 'bold';
           el.style.color = '#000';
+          el.style.cursor = 'pointer';
           el.textContent = String(index + 1);
+          
+          // Add click handler to show image modal
+          el.addEventListener('click', () => {
+            setSelectedStop(stop);
+          });
 
           new mapboxgl.Marker(el)
             .setLngLat([stop.location!.lng, stop.location!.lat])
@@ -170,29 +177,74 @@ export default function JourneyMap({ journey, currentStopIndex }: JourneyMapProp
         />
       )}
 
-      {/* Stop timeline below map */}
+      {/* Stop timeline below map - only current stop */}
       <div className="space-y-2">
-        {stops.map((stop, index) => (
-          <div
-            key={stop.id}
-            className={`p-3 text-left transition-all border-l-2 pl-4 ${
-              index === currentStopIndex
-                ? 'border-l-white bg-gray-900/40'
-                : 'border-l-gray-900'
-            }`}
-          >
-            <div className="text-xs text-gray-600 font-light tracking-widest">
-              STEP {index + 1}
+        {stops
+          .filter((_, index) => index === currentStopIndex)
+          .map((stop, index) => (
+            <div
+              key={stop.id}
+              className="p-3 text-left transition-all border-l-2 border-l-white pl-4 bg-gray-900/40"
+            >
+              <div className="text-xs text-gray-600 font-light tracking-widest">
+                STEP {currentStopIndex + 1}
+              </div>
+              <div className="font-light text-sm text-white">{stop.title}</div>
+              {stop.location && (
+                <div className="text-xs text-gray-500 font-light mt-1">
+                  {stop.location.name}
+                </div>
+              )}
             </div>
-            <div className="font-light text-sm text-white">{stop.title}</div>
-            {stop.location && (
-              <div className="text-xs text-gray-500 font-light mt-1">
-                {stop.location.name}
+          ))}
+      </div>
+
+      {/* Image Modal */}
+      {selectedStop && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setSelectedStop(null)}>
+          <div className="relative max-w-2xl w-full bg-gray-900 rounded-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Close button */}
+            <button
+              onClick={() => setSelectedStop(null)}
+              className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/40 p-2 rounded-full transition"
+            >
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Image */}
+            {selectedStop.imageUrl ? (
+              <img
+                src={selectedStop.imageUrl}
+                alt={selectedStop.title}
+                className="w-full h-auto object-cover"
+              />
+            ) : (
+              <div className="w-full h-64 bg-gray-800 flex items-center justify-center">
+                <p className="text-gray-500">No image available</p>
               </div>
             )}
+
+            {/* Info overlay */}
+            <div className="bg-gradient-to-t from-black/80 to-transparent p-6 pt-16">
+              <h3 className="text-2xl font-bold text-white mb-2">{selectedStop.title}</h3>
+              {selectedStop.location && (
+                <p className="text-gray-300 mb-3">{selectedStop.location.name}</p>
+              )}
+              {selectedStop.personName && (
+                <p className="text-sm text-gray-400 mb-2">
+                  <span className="font-semibold text-white">{selectedStop.personName}</span>
+                  {selectedStop.personQuote && `: "${selectedStop.personQuote}"`}
+                </p>
+              )}
+              {selectedStop.description && (
+                <p className="text-sm text-gray-400 mt-3">{selectedStop.description}</p>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
