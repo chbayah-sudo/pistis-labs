@@ -204,25 +204,51 @@ CRITICAL REQUIREMENTS:
     const imageUrl = `data:${mediaType};base64,${base64}`;
     console.log('🖼️  Using uploaded image as data URL');
 
-    console.log('� Fetching images for each stop...');
-    // Fetch images for each stop using location name for web search results
+    console.log('🖼️  Fetching images for each stop...');
+    // Fetch images for each stop with contextual search queries
     const stopsWithImages = await Promise.all(
       responseData.stops.map(async (stop: any, index: number) => {
         try {
-          // Search by location name to get real photos of that place
-          const locationName = stop.location?.name || stop.title;
-          
+          // Build simple, location-focused search query
+          const location = stop.location?.name || stop.title || '';
+
+          // Extract just the product category (e.g., "coffee", "phone", "shoes") for context
+          const subject = responseData.subject || '';
+          const subjectCategory = subject.split(' ').pop()?.toLowerCase() || ''; // Get last word (usually the category)
+
+          // Simple query: just location + category (e.g., "Nairobi coffee" or "Ohio manufacturing")
+          const searchQuery = `${location} ${subjectCategory}`.trim();
+
+          console.log(`   Fetching image for stop ${index + 1}: "${searchQuery}"`);
+
+          // Use relative URL path instead of full URL to avoid CORS/networking issues
           const imageRes = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/image/${encodeURIComponent(locationName)}`
+            `/api/image/${encodeURIComponent(searchQuery)}`
           );
+
+          if (!imageRes.ok) {
+            throw new Error(`Image API returned ${imageRes.status}`);
+          }
+
           const imageData = await imageRes.json();
+
+          if (!imageData || !imageData.url) {
+            throw new Error('No image URL in response');
+          }
+
+          console.log(`   ✓ Image found for: ${searchQuery} (${imageData.source})`);
+
           return {
             ...stop,
             imageUrl: imageData.url,
           };
         } catch (err) {
-          console.warn(`Failed to fetch image for stop: ${stop.title}`);
-          return stop;
+          console.warn(`   ✗ Failed to fetch image for stop ${index + 1}: ${stop.title}`, err);
+          // Return stop with a generic fallback image
+          return {
+            ...stop,
+            imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop&q=80', // Generic landscape
+          };
         }
       })
     );
