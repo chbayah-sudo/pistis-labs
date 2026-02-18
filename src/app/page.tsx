@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import ImageUpload from '@/components/ImageUpload';
 import JourneyViewer from '@/components/JourneyViewer';
 import { Journey } from '@/types';
@@ -65,7 +66,7 @@ export default function Home() {
         <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-gradient-to-br from-blue-500/10 to-transparent blur-3xl animate-pulse" style={{animationDuration: '6s'}}></div>
         <div className="absolute bottom-32 right-20 w-96 h-96 rounded-full bg-gradient-to-tl from-emerald-500/10 to-transparent blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
         <div className="absolute top-1/2 left-1/3 w-80 h-80 rounded-full bg-gradient-to-br from-purple-500/5 to-transparent blur-3xl animate-pulse" style={{animationDuration: '7s'}}></div>
-        
+
         {/* Grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:50px_50px] opacity-20"></div>
       </div>
@@ -80,16 +81,29 @@ export default function Home() {
           </div>
 
           {/* Main heading - artistic */}
-          <div className="space-y-6 mb-12">
-            <h1 className="text-7xl md:text-8xl font-light leading-none tracking-tight">
-              Everything{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 bg-clip-text text-transparent font-extralight">
-                has
-              </span>
-              <br />
-              a{' '}
-              <span className="text-gray-400">story</span>
-            </h1>
+          <div className="space-y-6 mb-12 relative">
+            <div className="flex items-start gap-[70px]">
+              <h1 className="text-7xl md:text-8xl font-light leading-none tracking-tight">
+                Everything{' '}
+                <span className="bg-gradient-to-r from-blue-400 via-emerald-400 to-purple-400 bg-clip-text text-transparent font-extralight">
+                  has
+                </span>
+                <br />
+                a{' '}
+                <span className="text-gray-400">story</span>
+              </h1>
+              {/* Globe image - next to title */}
+              <div className="flex-shrink-0 mt-4 ml-6">
+                <Image
+                  src="/earth.png"
+                  alt="Globe"
+                  width={180}
+                  height={180}
+                  className="grayscale opacity-40"
+                  priority
+                />
+              </div>
+            </div>
             <p className="text-lg text-gray-400 max-w-2xl font-light leading-relaxed">
               Upload any image. Discover its untold story. A product's supply chain, a place's history, a species' evolution, a moment's context. Every photograph reveals something profound.
             </p>
